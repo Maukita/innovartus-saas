@@ -33,5 +33,5 @@ jobs:
           if [ ! -f Dockerfile ]; then
             echo -e "FROM python:3.10-slim\nWORKDIR /app\nRUN pip install flask gunicorn\nRUN echo 'from flask import Flask, jsonify\\\napp = Flask(__name__)\\\n@app.route(\"/\")\\\ndef home(): return jsonify({\"status\":\"Success\",\"message\":\"Innovartus Live via GitHub Actions Automation!\"})\\\nif __name__ == \"__main__\": app.run(host=\"0.0.0.0\", port=5000)' > app.py\nEXPOSE 5000\nCMD [\"gunicorn\", \"app:app\", \"--bind\", \"0.0.0.0:5000\"]" > Dockerfile
           fi
-            docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-            docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
