@@ -1,32 +1,32 @@
 - name: Build, Tag, and Push Image to ECR
-      env:
+  env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: innovartus-saas
         IMAGE_TAG: latest
       run: |
-        # Create temporary mock files to build successfully if not present
+       
         if [ ! -f Dockerfile ]; then
-          cat << 'EOF' > app.py
-from flask import Flask, jsonify
-app = Flask(__name__)
+        cat << 'EOF' > app.py
+        from flask import Flask, jsonify
+        app = Flask(__name__)
+            
+        @app.route("/")
+        def home():
+        return jsonify({"status": "Success", "message": "Innovartus Live via GitHub Actions Automation!"})
+      
+        if __name__ == "__main__":
+        app.run(host="0.0.0.0", port=5000)
+        EOF
 
-@app.route("/")
-def home():
-    return jsonify({"status": "Success", "message": "Innovartus Live via GitHub Actions Automation!"})
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-EOF
-
-          cat << 'EOF' > Dockerfile
-FROM python:3.10-slim
-WORKDIR /app
-RUN pip install flask gunicorn
-COPY app.py .
-EXPOSE 5000
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:5000"]
-EOF
+        cat << 'EOF' > Dockerfile
+        FROM python:3.10-slim
+        WORKDIR /app
+        RUN pip install flask gunicorn
+        COPY app.py .
+        EXPOSE 5000
+        CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:5000"]
+        EOF
         fi
-
+      
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
